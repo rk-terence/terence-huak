@@ -49,37 +49,29 @@ void setup() {
 	pinMode(MOTOR4, OUTPUT);
 
 
-	attachInterrupt(digitalPinToInterrupt(INTER1), CALL_INTER1, FALLING);
-	attachInterrupt(digitalPinToInterrupt(INTER2), CALL_INTER2, FALLING);
-	attachInterrupt(digitalPinToInterrupt(INTER3), CALL_INTER3, FALLING);
-	attachInterrupt(digitalPinToInterrupt(INTER4), CALL_INTER4, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(INTER1), CALL_INTER1, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(INTER2), CALL_INTER2, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(INTER3), CALL_INTER3, FALLING);
+	//attachInterrupt(digitalPinToInterrupt(INTER4), CALL_INTER4, FALLING);
 	
-
-	//中断处理相关
 	//FlexiTimer2::set(10, Flash);  // 中断设置函数，每 10ms 进入一次中断
 	//FlexiTimer2::start();
+
+	move_Mode = List[0][Now_Node];	//中断处理相关
 }
 
 // the loop function runs over and over again until power down or reset
 void loop()
 {
-	move_Mode = List[0][Now_Node];
-	PEread();
+	PEread();	//读取光电传感器的值
 
-	//调试输出
+	//监控器调试输出
 	flag = peRead31*1000+peRead32*100+peRead33*10+peRead34;
 	Serial.println(flag);
-		
-	crossing_flag = crossing;
-	Mode_flag = move_Mode;
-	Node_flag = Now_Node;
-	step_flag = Now_step;
-
-	//监视器监控调试
-	Serial.println(crossing_flag);
-	Serial.println(Mode_flag);
-	Serial.println(Node_flag);
-	Serial.println(step_flag);
+	Serial.println((int)crossing);
+	Serial.println((int)move_Mode);
+	Serial.println((int)Now_Node);
+	Serial.println((int)Now_step);
 
 
 	switch (move_Mode)

@@ -87,7 +87,7 @@ void PE_to_Position()
 					omni_angle = 135;
 					omni_pwm = 250;
 				}
-
+				//到交叉口，对一些参数进行替换。
 				if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
 				{
 					if (crossing == 0)
@@ -100,12 +100,12 @@ void PE_to_Position()
 						change_crossing = 0;
 					}
 					crossing = 1;
-						return;
 				}
 				break;
 
 			default:
 				omni_pwm = 0;
+				break;
 			
 		}
 
