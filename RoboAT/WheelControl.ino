@@ -138,7 +138,7 @@ void DMotorControl(char status1, unsigned char pwm1, char status2, unsigned char
 	analogWrite(MOTOR4, pwm4);
 
 	digitalWrite(MOTOR11, status1); digitalWrite(MOTOR12, status1 - 1);
-	digitalWrite(MOTOR21, status2 - 1); digitalWrite(MOTOR12, status2);
-	digitalWrite(MOTOR31, status3 - 1); digitalWrite(MOTOR12, status3);
-	digitalWrite(MOTOR41, status4); digitalWrite(MOTOR12, status4 - 1);
+	digitalWrite(MOTOR21, status2 - 1); digitalWrite(MOTOR22, status2);
+	digitalWrite(MOTOR31, status3 - 1); digitalWrite(MOTOR32, status3);
+	digitalWrite(MOTOR41, status4); digitalWrite(MOTOR42, status4 - 1);
 }

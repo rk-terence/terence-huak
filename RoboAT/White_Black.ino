@@ -63,50 +63,89 @@ void PE_to_Modify()
 ************************************************************************************/
 void PE_to_Position()
 {
-	if(!crossing)
+	if (!crossing)
 	{
 		switch (move_Mode)
 		{
-			case X_increase:
-				//继续直走
-				if ((! peRead32 && !peRead33) || (!peRead42 && !peRead43))
-				{
-					omni_angle = 180;
-					omni_pwm = 250;
-				}
+		case X_increase:
+			//继续直走
+			if ((!peRead32 && !peRead33) || (!peRead42 && !peRead43))
+			{
+				omni_angle = 180;
+				omni_pwm = 212;
+			}
 
-				//需要左偏
-				if (!peRead34 && peRead32 && peRead31)
-				{
-					omni_angle = 225;
-					omni_pwm = 250;
-				}
-				//需要右偏
-				if (!peRead31 && peRead33 && peRead34)
-				{
-					omni_angle = 135;
-					omni_pwm = 250;
-				}
-				//到交叉口，对一些参数进行替换。
-				if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
-				{
-					if (crossing == 0)
-					{
-						change_crossing = 1;
-						++Now_step;
-					}
-					else
-					{
-						change_crossing = 0;
-					}
-					crossing = 1;
-				}
-				break;
+			//需要左偏
+			if (!peRead34 && peRead32 && peRead31)
+			{
+				omni_angle = 200;
+				omni_pwm = 250;
+			}
+			//需要右偏
+			if (!peRead31 && peRead33 && peRead34)
+			{
+				omni_angle = 160;
+				omni_pwm = 250;
+			}
 
-			default:
-				omni_pwm = 0;
-				break;
-			
+			if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
+			{
+				if (crossing == 0)
+				{
+					change_crossing = 1;
+					++Now_step;
+				}
+				else
+				{
+					change_crossing = 0;
+				}
+				crossing = 1;
+				return;
+			}
+
+
+			break;
+
+		case Y_decrease:
+			//继续直走
+			if ((!peRead31 && !peRead32 && !peRead33 && !peRead34))
+			{
+				omni_angle = 90;
+				omni_pwm = 212;
+			}
+
+			//需要左偏
+			if (!peRead23 || !peRead24)
+			{
+				omni_angle = 315;
+				omni_pwm = 250;
+			}
+			//需要右偏
+			if (!peRead31 || !peRead32)
+			{
+				omni_angle = 225;
+				omni_pwm = 250;
+			}
+
+			if (!peRead32 && !peRead42)
+			{
+				if (crossing == 0)
+				{
+					change_crossing = 1;
+					++Now_step;
+				}
+				else
+				{
+					change_crossing = 0;
+				}
+				crossing = 1;
+				return;
+			}
+			break;
+
+		default:
+			omni_pwm = 0;
+
 		}
 
 	}
@@ -115,19 +154,25 @@ void PE_to_Position()
 		switch (move_Mode)
 		{
 		case X_increase:
-
 			if ((peRead31 + peRead32 + peRead33 + peRead34) >= 2)
 			{
 				crossing = 0;
 				change_crossing = 0;
 			}
-
 			break;
+
+		case Y_decrease:
+			if (peRead32 || peRead42)
+			{
+				crossing = 0;
+				change_crossing = 0;
+			}
+
 		default:
 			omni_pwm = 0;
 		}
 	}
-			
+
 	return;
 }
 

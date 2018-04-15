@@ -76,6 +76,6 @@ char Get_Point;
 const char List_Node1 = 10;
 char Now_step=0, Now_Node=0;
 //运动路径List, 第一行存储移动状态，第二行存储移动步数
-char List[2][List_Node1] =
-{{ X_increase,7 },{6,9}};
+char List[][List_Node1] =
+{{ X_increase,Y_decrease,7 },{3,3,7}};
 //移动步数在双环嵌套PID中作为输入量
