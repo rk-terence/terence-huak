@@ -69,23 +69,20 @@ void PE_to_Position()
 		{
 		case X_increase:
 			//继续直走
-			if ((!peRead32 && !peRead33) || (!peRead42 && !peRead43))
+			if (peRead31 + peRead32 + peRead41 + peRead42 == peRead33 + peRead34 + peRead43 + peRead44)
 			{
 				omni_angle = 180;
-				omni_pwm = 212;
 			}
 
 			//需要左偏
-			if (!peRead34 && peRead32 && peRead31)
+			if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
 			{
 				omni_angle = 200;
-				omni_pwm = 250;
 			}
 			//需要右偏
-			if (!peRead31 && peRead33 && peRead34)
+			if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
 			{
 				omni_angle = 160;
-				omni_pwm = 250;
 			}
 
 			if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
@@ -102,29 +99,34 @@ void PE_to_Position()
 				crossing = 1;
 				return;
 			}
-
+			/*else
+			{
+				omni_angle = 180;
+				omni_pwm = 250;
+			}*/
 
 			break;
 
 		case Y_decrease:
+			
 			//继续直走
-			if ((!peRead31 && !peRead32 && !peRead33 && !peRead34))
+			if (peRead31 + peRead32 + peRead33 + peRead34 == peRead41 + peRead42 + peRead43 + peRead44)
 			{
-				omni_angle = 90;
-				omni_pwm = 212;
+				omni_angle = 270;
+				
 			}
 
 			//需要左偏
-			if (!peRead23 || !peRead24)
+			if (peRead31 + peRead32 + peRead33 + peRead34 < peRead41 + peRead42 + peRead43 + peRead44)
 			{
-				omni_angle = 315;
-				omni_pwm = 250;
+				omni_angle = 290;
+				
 			}
 			//需要右偏
-			if (!peRead31 || !peRead32)
+			if (peRead31 + peRead32 + peRead33 + peRead34 > peRead41 + peRead42 + peRead43 + peRead44)
 			{
-				omni_angle = 225;
-				omni_pwm = 250;
+				omni_angle = 250;
+				
 			}
 
 			if (!peRead32 && !peRead42)
@@ -139,8 +141,13 @@ void PE_to_Position()
 					change_crossing = 0;
 				}
 				crossing = 1;
-				return;
+
 			}
+			/*else
+			{
+				omni_angle = 270;
+				omni_pwm = 250;
+			}*/
 			break;
 
 		default:
@@ -149,7 +156,7 @@ void PE_to_Position()
 		}
 
 	}
-	else
+	else//crossing == 1
 	{
 		switch (move_Mode)
 		{
@@ -167,13 +174,11 @@ void PE_to_Position()
 				crossing = 0;
 				change_crossing = 0;
 			}
-
+			break;
 		default:
 			omni_pwm = 0;
 		}
 	}
-
-	return;
 }
 
 /***********************************************************************************
