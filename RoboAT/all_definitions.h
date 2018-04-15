@@ -40,6 +40,7 @@ const char X_increase = 0, X_decrease = 1, Y_increase = 2, Y_decrease = 3, Find_
 
 //LOOP函数相关
 int flag, crossing_flag, Mode_flag, Node_flag, step_flag;//flags
+char init_flag = 1;
 
 char PEread_flag;//设置读取状态标志，0表示读取不记录，1表示读取并记录中，2表示记录完毕
 const char OnlyRead = 0, Reading = 1, ReadOver = 2;
@@ -64,8 +65,8 @@ short queue31, queue32, queue33, queue34;
 short queue41, queue42, queue43, queue44;
 
 //Oniwheel 相关
-int Oni_angle;
-float Oni_speed;
+int omni_angle, last_angle;
+float omni_pwm, last_pwm;
 
 //机器人关键帧相关
 char key_flag, crossing, runaway, change_crossing; //十字路口与跑偏状态

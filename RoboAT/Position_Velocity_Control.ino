@@ -422,5 +422,5 @@ Note:		得到店家的一圈多少个上升沿之后，可以更新实时速度。
 */
 void Flash()
 {
-	OmniDirMove(Oni_angle, Oni_speed);
+	OmniDirMove(omni_angle, omni_pwm);
 }

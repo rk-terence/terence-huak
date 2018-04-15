@@ -56,61 +56,171 @@ void setup() {
 	
 
 	//中断处理相关
-	FlexiTimer2::set(10, Flash);  // 中断设置函数，每 10ms 进入一次中断
-	FlexiTimer2::start();
+	//FlexiTimer2::set(10, Flash);  // 中断设置函数，每 10ms 进入一次中断
+	//FlexiTimer2::start();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop()
 {
-		move_Mode = List[0][Now_Node];
-		PEread();
+	move_Mode = List[0][Now_Node];
+	PEread();
 
-		//调试输出
-		flag = peRead31*1000+peRead32*100+peRead33*10+peRead34;
-		Serial.println(flag);
+	//调试输出
+	flag = peRead31*1000+peRead32*100+peRead33*10+peRead34;
+	Serial.println(flag);
 		
-		crossing_flag = crossing;
-		Mode_flag = move_Mode;
-		Node_flag = Now_Node;
-		step_flag = Now_step;
+	crossing_flag = crossing;
+	Mode_flag = move_Mode;
+	Node_flag = Now_Node;
+	step_flag = Now_step;
 
-		//监视器监控
-		Serial.println(crossing_flag);
-		Serial.println(Mode_flag);
-		Serial.println(Node_flag);
-		Serial.println(step_flag);
+	//监视器监控调试
+	Serial.println(crossing_flag);
+	Serial.println(Mode_flag);
+	Serial.println(Node_flag);
+	Serial.println(step_flag);
 
 
-		switch (move_Mode)
+	switch (move_Mode)
+	{
+	case X_increase:
+		if (init_flag)
 		{
-		case X_increase:
-			Oni_angle = 180; Oni_speed = 250;
-			PE_to_Position();
-			if (Now_step == List[1][Now_Node] - 1)
-			{
-				Oni_speed = 125;
-			}
-			if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
-			{
-				++Now_Node;
-				move_Mode = List[0][Now_Node];
-				Now_step = 0;
-				break;
-			}
-			break;
-		case X_decrease:
-			Oni_angle = 0; Oni_speed = 250;
-			break;
-		case Y_increase:
-			Oni_angle = 90; Oni_speed = 250;
-			break;
-		case Y_decrease:
-			Oni_angle = 270; Oni_speed = 250;
-			break;
-		default:
-			Oni_speed = 0;
-			break;
+			omni_angle = 180; omni_pwm = 250;//初始化
+			OmniDirMove(omni_angle, omni_pwm);
+			init_flag = 0;
 		}
 
+		//直线循迹
+		PE_to_Position();
+		if (omni_angle != last_angle || omni_pwm == last_pwm)
+			OmniDirMove(omni_angle, omni_pwm);
+
+		//制动急停，与下面的预先停止二选一
+		if (Now_step == List[1][Now_Node])
+			DMotorControl(-1, 125, -1, 125, -1, 125, -1, 125);
+
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 125;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+			++Now_Node;
+			move_Mode = List[0][Now_Node];
+			Now_step = 0;
+			init_flag = 1;
+			break;
+		}
+		break;
+	case X_decrease:
+		if (init_flag)
+		{
+			omni_angle = 0; omni_pwm = 250;//初始化
+			OmniDirMove(omni_angle, omni_pwm);
+			init_flag = 0;
+		}
+
+		//直线循迹
+		PE_to_Position();
+		if (omni_angle != last_angle || omni_pwm == last_pwm)
+			OmniDirMove(omni_angle, omni_pwm);
+
+		//制动，与下面的预先停止二选一
+		if (Now_step == List[1][Now_Node])
+			DMotorControl(-1, 125, -1, 125, -1, 125, -1, 125);
+
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 125;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+			++Now_Node;
+			move_Mode = List[0][Now_Node];
+			Now_step = 0;
+			init_flag = 1;
+			break;
+		}
+		break;
+	case Y_increase:
+		if (init_flag)
+		{
+			omni_angle = 90; omni_pwm = 250;//初始化
+			OmniDirMove(omni_angle, omni_pwm);
+			init_flag = 0;
+		}
+
+		//直线循迹
+		PE_to_Position();
+		if (omni_angle != last_angle || omni_pwm == last_pwm)
+			OmniDirMove(omni_angle, omni_pwm);
+
+		//制动，与下面的预先停止二选一
+		if (Now_step == List[1][Now_Node])
+			DMotorControl(-1, 125, -1, 125, -1, 125, -1, 125);
+
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 125;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+			++Now_Node;
+			move_Mode = List[0][Now_Node];
+			Now_step = 0;
+			init_flag = 1;
+			break;
+		}
+		break;
+	case Y_decrease:
+		if (init_flag)
+		{
+			omni_angle = 270; omni_pwm = 250;//初始化
+			OmniDirMove(omni_angle, omni_pwm);
+			init_flag = 0;
+		}
+
+		//直线循迹
+		PE_to_Position();
+		if (omni_angle != last_angle || omni_pwm == last_pwm)
+			OmniDirMove(omni_angle, omni_pwm);
+
+		//制动，与下面的预先停止二选一
+		if (Now_step == List[1][Now_Node])
+			DMotorControl(-1, 125, -1, 125, -1, 125, -1, 125);
+
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 125;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+			++Now_Node;
+			move_Mode = List[0][Now_Node];
+			Now_step = 0;
+			init_flag = 1;
+			break;
+		}
+		break;
+	default:
+		omni_pwm = 0;
+		break;
+	}
+	
+	last_angle = omni_angle;
+	last_pwm = omni_pwm;
 }

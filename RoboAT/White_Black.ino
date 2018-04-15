@@ -71,21 +71,21 @@ void PE_to_Position()
 				//继续直走
 				if ((! peRead32 && !peRead33) || (!peRead42 && !peRead43))
 				{
-					Oni_angle = 180;
-					Oni_speed = 250;
+					omni_angle = 180;
+					omni_pwm = 250;
 				}
 
 				//需要左偏
 				if (!peRead34 && peRead32 && peRead31)
 				{
-					Oni_angle = 225;
-					Oni_speed = 250;
+					omni_angle = 225;
+					omni_pwm = 250;
 				}
 				//需要右偏
 				if (!peRead31 && peRead33 && peRead34)
 				{
-					Oni_angle = 135;
-					Oni_speed = 250;
+					omni_angle = 135;
+					omni_pwm = 250;
 				}
 
 				if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
@@ -105,7 +105,7 @@ void PE_to_Position()
 				break;
 
 			default:
-				Oni_speed = 0;
+				omni_pwm = 0;
 			
 		}
 
@@ -124,7 +124,7 @@ void PE_to_Position()
 
 			break;
 		default:
-			Oni_speed = 0;
+			omni_pwm = 0;
 		}
 	}
 			
