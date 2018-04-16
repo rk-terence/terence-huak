@@ -1,1 +1,1 @@
-This is the test of how to merge a 
+This is the test of how to merge two branches.
