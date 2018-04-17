@@ -1,4 +1,10 @@
 #include "all_definitions.h"
+/*2018.4.17增加内容：
+	增加函数，判断一列（4个）光电传感器是否值都相等。
+	完全改变了逻辑。期待可以奏效。目前只改变了Y_decrease的逻辑。
+	Swirl的pwm改为200
+*/
+
 
 /*********************************************************************************
 函数功能：只读取光电传感器返回值
@@ -24,6 +30,43 @@ void PEread()
 	peRead43 = digitalRead(line4_pin3);
 	peRead44 = digitalRead(line4_pin4);
 	return;
+}
+
+/*********************************************************************************
+函数功能：判断读取的光电传感器的值是否相等
+入口参数：某一个传感器线列
+返回  值：布尔
+***********************************************************************************/
+short IsSensorEqual(short line)
+{
+	switch (line)
+	{
+	case 1:
+		if (peRead11 == peRead12)
+			if (peRead11 == peRead13)
+				if (peRead11 == peRead14)
+					return 1;
+		break;
+	case 2:
+		if (peRead21 == peRead22)
+			if (peRead21 == peRead23)
+				if (peRead21 == peRead24)
+					return 1;
+		break;
+	case 3:
+		if (peRead31 == peRead32)
+			if (peRead31 == peRead33)
+				if (peRead31 == peRead34)
+					return 1;
+		break;
+	case 4:
+		if (peRead41 == peRead12)
+			if (peRead41 == peRead43)
+				if (peRead41 == peRead44)
+					return 1;
+		break;
+	}
+	return 0;
 }
 
 /*********************************************************************************
@@ -115,31 +158,39 @@ void PE_to_Position()
 		}
 		case Y_decrease:
 		{
-		//继续直走
-		if (peRead31 + peRead32 + peRead33 + peRead34 == peRead41 + peRead42 + peRead43 + peRead44)
+		//继续前进
+		if (peRead31 + peRead32 + peRead33 + peRead34 == 4 && peRead41 + peRead42 + peRead43 + peRead44 == 0 \
+			|| peRead31 + peRead32 + peRead33 + peRead34 == 0 && peRead41 + peRead42 + peRead43 + peRead44 == 4)//一边黑一边白
 		{
 			omni_angle = 270;
 		}
-		//需要左偏
-		if (peRead31 + peRead32 + peRead33 + peRead34 < peRead41 + peRead42 + peRead43 + peRead44)
+		//如果出现全黑，分情况讨论
+		else if (peRead31 + peRead32 + peRead33 + peRead34 == 4 && peRead41 + peRead42 + peRead43 + peRead44 == 4)//全黑
 		{
-			omni_angle = 290;
+			if (peRead22 && peRead23)//两个全黑，则直走
+				omni_angle = 270;
+			else if (peRead22 && !peRead23)//一黑一白
+			{
+				omni_angle = 0;
+				omni_pwm = 200;
+			}
+			else if (!peRead22 && peRead23)//一黑一白，与上面相反
+			{
+				omni_angle = 180;
+				omni_pwm = 200;
+			}
+			else//如果全白，无法判断，继续直走
+				omni_angle = 270;
 		}
-		//需要很往左偏
-		if (0)
+		//如果小车不正
+		else if (!IsSensorEqual(4) || !IsSensorEqual(3))
 		{
-
+			if (peRead44)
+				Swirl(2);
+			if (peRead34)
+				Swirl(1);
 		}
-		//需要右偏
-		if (peRead31 + peRead32 + peRead33 + peRead34 > peRead41 + peRead42 + peRead43 + peRead44)
-		{
-			omni_angle = 250;
-		}
-		//需要很往右偏
-		if (0)
-		{
-
-		}
+		
 		//如果进入节点
 		if (!peRead32 && !peRead42 || !peRead33 && !peRead43)//原判断条件: !peRead32 && !peRead42
 		{

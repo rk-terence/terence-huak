@@ -118,11 +118,11 @@ void Swirl(int choice)
 	switch (choice)
 	{
 	case 1:
-		analogWrite(MOTOR1, 250); analogWrite(MOTOR2, 250); analogWrite(MOTOR3, 250); analogWrite(MOTOR4, 250);
+		analogWrite(MOTOR1, 200); analogWrite(MOTOR2, 200); analogWrite(MOTOR3, 200); analogWrite(MOTOR4, 200);
 		digitalWrite(MOTOR11, LOW); digitalWrite(MOTOR12, HIGH); digitalWrite(MOTOR21, LOW); digitalWrite(MOTOR22, HIGH); digitalWrite(MOTOR31, LOW); digitalWrite(MOTOR32, HIGH); digitalWrite(MOTOR41, LOW); digitalWrite(MOTOR42, HIGH);
 		break;
 	case 2:
-		analogWrite(MOTOR1, 250); analogWrite(MOTOR2, 250); analogWrite(MOTOR3, 250); analogWrite(MOTOR4, 250);
+		analogWrite(MOTOR1, 200); analogWrite(MOTOR2, 200); analogWrite(MOTOR3, 200); analogWrite(MOTOR4, 200);
 		digitalWrite(MOTOR11, HIGH); digitalWrite(MOTOR12, LOW); digitalWrite(MOTOR21, HIGH); digitalWrite(MOTOR22, LOW); digitalWrite(MOTOR31, HIGH); digitalWrite(MOTOR32, LOW); digitalWrite(MOTOR41, HIGH); digitalWrite(MOTOR42, LOW);
 		break;
 	default: break;
