@@ -91,12 +91,13 @@ void loop()
 			init_flag = 0;
 		}
 
-		//直线循迹
+		//直线循迹, 判断是否走偏.
 		PE_to_Position();
 		if (omni_angle != last_angle || omni_pwm == last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令
+		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令.
+		//如果
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);

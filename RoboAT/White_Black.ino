@@ -60,6 +60,13 @@ void PE_to_Modify()
 函数功能：通过光电传感器读数分析出机器人目前状态，出现可能特殊状态时引导程序进入case 1, 包括过左、过右、十字
 入口参数：无
 返回  值：无
+备注:	传感器返回的值, 黑色返回1, 白色返回0
+版本:
+	2.0: 利用line3和line4的逻辑来判断是否直走, 具体是差分. 具体效果待观察, 应该不会出现问题. 目前存在的问题是
+		Y_decrease无法走直线, 以及X_increase走得不够直.
+	2.1: 优化了代码(删除冗余). 方便读代码.
+	2.2: 改变X判断进入节点的逻辑, 改变Y判断进入节点的逻辑.
+	2.3: 待加入新的Y方向判断逻辑, 使其更完善.
 ************************************************************************************/
 void PE_to_Position()
 {
@@ -68,115 +75,120 @@ void PE_to_Position()
 		switch (move_Mode)
 		{
 		case X_increase:
-			//继续直走
-			if (peRead31 + peRead32 + peRead41 + peRead42 == peRead33 + peRead34 + peRead43 + peRead44)
-			{
-				omni_angle = 180;
-			}
+		{
+		//继续直走
+		if (peRead31 + peRead32 + peRead41 + peRead42 == peRead33 + peRead34 + peRead43 + peRead44)
+		{
+			omni_angle = 180;
+		}
+		//需要左偏
+		if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
+		{
+			omni_angle = 200;
+		}
+		//需要右偏
+		if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
+		{
+			omni_angle = 160;
+		}
+		//假如遇到了十字路口
+		if (peRead31 + peRead32 + peRead33 + peRead34 < 2)//原判断条件: !peRead31 && !peRead32 && !peRead33 && !peRead34
+		{
+			crossing = 1;
+			Now_step++;
+		}
+		/*else
+		{
+			omni_angle = 180;
+			omni_pwm = 250;
+		}*/
 
-			//需要左偏
-			if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
-			{
-				omni_angle = 200;
-			}
-			//需要右偏
-			if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
-			{
-				omni_angle = 160;
-			}
-
-			if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
-			{
-				if (crossing == 0)
-				{
-					change_crossing = 1;
-					++Now_step;
-				}
-				else
-				{
-					change_crossing = 0;
-				}
-				crossing = 1;
-				return;
-			}
-			/*else
-			{
-				omni_angle = 180;
-				omni_pwm = 250;
-			}*/
-
+		break;
+		}
+		case X_decrease:
+		{
 			break;
-
+		}
+		case Y_increase:
+		{
+			break;
+		}
 		case Y_decrease:
-			
-			//继续直走
-			if (peRead31 + peRead32 + peRead33 + peRead34 == peRead41 + peRead42 + peRead43 + peRead44)
-			{
-				omni_angle = 270;
-				
-			}
-
-			//需要左偏
-			if (peRead31 + peRead32 + peRead33 + peRead34 < peRead41 + peRead42 + peRead43 + peRead44)
-			{
-				omni_angle = 290;
-				
-			}
-			//需要右偏
-			if (peRead31 + peRead32 + peRead33 + peRead34 > peRead41 + peRead42 + peRead43 + peRead44)
-			{
-				omni_angle = 250;
-				
-			}
-
-			if (!peRead32 && !peRead42)
-			{
-				if (crossing == 0)
-				{
-					change_crossing = 1;
-					++Now_step;
-				}
-				else
-				{
-					change_crossing = 0;
-				}
-				crossing = 1;
-
-			}
-			/*else
-			{
-				omni_angle = 270;
-				omni_pwm = 250;
-			}*/
-			break;
-
-		default:
-			omni_pwm = 0;
+		{
+		//继续直走
+		if (peRead31 + peRead32 + peRead33 + peRead34 == peRead41 + peRead42 + peRead43 + peRead44)
+		{
+			omni_angle = 270;
+		}
+		//需要左偏
+		if (peRead31 + peRead32 + peRead33 + peRead34 < peRead41 + peRead42 + peRead43 + peRead44)
+		{
+			omni_angle = 290;
+		}
+		//需要很往左偏
+		if (0)
+		{
 
 		}
+		//需要右偏
+		if (peRead31 + peRead32 + peRead33 + peRead34 > peRead41 + peRead42 + peRead43 + peRead44)
+		{
+			omni_angle = 250;
+		}
+		//需要很往右偏
+		if (0)
+		{
 
+		}
+		//如果进入节点
+		if (!peRead32 && !peRead42 || !peRead33 && !peRead43)//原判断条件: !peRead32 && !peRead42
+		{
+			Now_step++;
+			crossing = 1;
+		}
+		/*else
+		{
+			omni_angle = 270;
+			omni_pwm = 250;
+		}*/
+		break;
+		}
+		default:
+			omni_pwm = 0;
+			break;
+		}
 	}
 	else//crossing == 1
 	{
 		switch (move_Mode)
 		{
 		case X_increase:
-			if ((peRead31 + peRead32 + peRead33 + peRead34) >= 2)
+		{
+			if ((peRead31 + peRead32 + peRead33 + peRead34) >= 2)//当大于两个是黑的时候代表出了crossing.
 			{
 				crossing = 0;
-				change_crossing = 0;
 			}
 			break;
-
+		}
+		case X_decrease:
+		{
+			break;
+		}
+		case Y_increase:
+		{
+			break;
+		}
 		case Y_decrease:
+		{
 			if (peRead32 || peRead42)
 			{
 				crossing = 0;
-				change_crossing = 0;
 			}
-			break;
+			break; 
+		}
 		default:
 			omni_pwm = 0;
+			break;
 		}
 	}
 }
