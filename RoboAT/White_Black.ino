@@ -4,6 +4,8 @@
 	完全改变了逻辑。期待可以奏效。目前只改变了Y_decrease的逻辑。
 	Swirl的pwm改为200
 */
+/*2018.4.18增加内容：
+	把X_increase 的方向调整改为200pwm，角度改为正常。*/
 
 
 /*********************************************************************************
@@ -127,12 +129,14 @@ void PE_to_Position()
 		//需要左偏
 		if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
 		{
-			omni_angle = 200;
+			omni_angle = 225;
+			omni_pwm = 200;
 		}
 		//需要右偏
 		if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
 		{
-			omni_angle = 160;
+			omni_angle = 135;
+			omni_pwm = 200;
 		}
 		//假如遇到了十字路口
 		if (peRead31 + peRead32 + peRead33 + peRead34 < 2)//原判断条件: !peRead31 && !peRead32 && !peRead33 && !peRead34
