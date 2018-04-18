@@ -112,6 +112,8 @@ void PE_to_Modify()
 	2.1: 优化了代码(删除冗余). 方便读代码.
 	2.2: 改变X判断进入节点的逻辑, 改变Y判断进入节点的逻辑.
 	2.3: 待加入新的Y方向判断逻辑, 使其更完善.
+		未来方向(2.4): 考虑到X方向寻线也不是太好, 所以准备把X方向的寻线逻辑升级一下.准备使用line3和line4.
+	2.4: 见2.3.
 ************************************************************************************/
 void PE_to_Position()
 {
@@ -121,25 +123,42 @@ void PE_to_Position()
 		{
 		case X_increase:
 		{
-		//继续直走
-		if (peRead31 + peRead32 + peRead41 + peRead42 == peRead33 + peRead34 + peRead43 + peRead44)
+		//继续直走(车身正)
+		if (!peRead32 && !peRead42 && !peRead33 && !peRead43 \
+			|| !peRead32 && !peRead42 && peRead33 && peRead43|| !peRead33 && !peRead43 && peRead32 &&peRead42)
+			//中间4个全白或者一边白一边黑.
 		{
 			omni_angle = 180;
 		}
-		//需要左偏
-		if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
+		else if (peRead32 && peRead42 && peRead33 && peRead43)//如果全黑的话
+		{
+			if (!peRead41 && !peRead31)
+			{
+				omni_angle = 225;
+				omni_pwm = 200;
+			}
+			else if (!peRead44 && !peRead34)
+			{
+				omni_angle = 315;
+				omni_pwm = 200;
+			}
+			//如果没有发生上述情形, 就继续上一个指令. 这里就不写else了
+		}
+		//需要左纠偏
+		else if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
 		{
 			omni_angle = 225;
 			omni_pwm = 200;
 		}
 		//需要右偏
-		if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
+		else if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
 		{
 			omni_angle = 135;
 			omni_pwm = 200;
 		}
+
 		//假如遇到了十字路口
-		if (peRead31 + peRead32 + peRead33 + peRead34 < 2)//原判断条件: !peRead31 && !peRead32 && !peRead33 && !peRead34
+		if (peRead31 + peRead32 + peRead33 + peRead34 < 2 || peRead41 + peRead42 + peRead43 + peRead44 < 2)//原判断条件: !peRead31 && !peRead32 && !peRead33 && !peRead34
 		{
 			crossing = 1;
 			Now_step++;
@@ -219,7 +238,7 @@ void PE_to_Position()
 		{
 		case X_increase:
 		{
-			if ((peRead31 + peRead32 + peRead33 + peRead34) >= 2)//当大于两个是黑的时候代表出了crossing.
+			if (peRead31 + peRead32 + peRead33 + peRead34 >= 2 && peRead41 + peRead42 + peRead43 + peRead44 >= 2)//当大于两个是黑的时候代表出了crossing.
 			{
 				crossing = 0;
 			}
