@@ -4,8 +4,7 @@
 	完全改变了逻辑。期待可以奏效。目前只改变了Y_decrease的逻辑。
 	Swirl的pwm改为200
 */
-/*2018.4.18增加内容：
-	把X_increase 的方向调整改为200pwm，角度改为正常。*/
+
 
 
 /*********************************************************************************
@@ -114,6 +113,7 @@ void PE_to_Modify()
 	2.3: 待加入新的Y方向判断逻辑, 使其更完善.
 		未来方向(2.4): 考虑到X方向寻线也不是太好, 所以准备把X方向的寻线逻辑升级一下.准备使用line3和line4.
 	2.4: 见2.3.
+	2.5: 对X_decrease和Y_increase进行了扩展。 2018.4.18
 ************************************************************************************/
 void PE_to_Position()
 {
@@ -134,12 +134,12 @@ void PE_to_Position()
 		{
 			if (!peRead41 && !peRead31)
 			{
-				omni_angle = 225;
+				omni_angle = 135;
 				omni_pwm = 200;
 			}
 			else if (!peRead44 && !peRead34)
 			{
-				omni_angle = 315;
+				omni_angle = 225;
 				omni_pwm = 200;
 			}
 			//如果没有发生上述情形, 就继续上一个指令. 这里就不写else了
@@ -173,10 +173,100 @@ void PE_to_Position()
 		}
 		case X_decrease:
 		{
+			//继续直走(车身正)
+			if (!peRead32 && !peRead42 && !peRead33 && !peRead43 \
+				|| !peRead32 && !peRead42 && peRead33 && peRead43 || !peRead33 && !peRead43 && peRead32 &&peRead42)
+				//中间4个全白或者一边白一边黑.
+			{
+				omni_angle = 0;
+			}
+			else if (peRead32 && peRead42 && peRead33 && peRead43)//如果全黑的话
+			{
+				if (!peRead41 && !peRead31)
+				{
+					omni_angle = 45;
+					omni_pwm = 200;
+				}
+				else if (!peRead44 && !peRead34)
+				{
+					omni_angle = 315;
+					omni_pwm = 200;
+				}
+				//如果没有发生上述情形, 就继续上一个指令. 这里就不写else了
+			}
+			//需要左纠偏
+			else if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
+			{
+				omni_angle = 225;
+				omni_pwm = 200;
+			}
+			//需要右偏
+			else if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
+			{
+				omni_angle = 135;
+				omni_pwm = 200;
+			}
+
+			//假如遇到了十字路口
+			if (peRead31 + peRead32 + peRead33 + peRead34 < 2 || peRead41 + peRead42 + peRead43 + peRead44 < 2)//原判断条件: !peRead31 && !peRead32 && !peRead33 && !peRead34
+			{
+				crossing = 1;
+				Now_step++;
+			}
+			/*else
+			{
+			omni_angle = 180;
+			omni_pwm = 250;
+			}*/
+
 			break;
 		}
 		case Y_increase:
 		{
+			//继续前进
+			if (peRead31 + peRead32 + peRead33 + peRead34 == 4 && peRead41 + peRead42 + peRead43 + peRead44 == 0 \
+				|| peRead31 + peRead32 + peRead33 + peRead34 == 0 && peRead41 + peRead42 + peRead43 + peRead44 == 4)//一边黑一边白
+			{
+				omni_angle = 90;
+			}
+			//如果出现全黑，分情况讨论
+			else if (peRead31 + peRead32 + peRead33 + peRead34 == 4 && peRead41 + peRead42 + peRead43 + peRead44 == 4)//全黑
+			{
+				if (peRead12 && peRead13)//两个全黑，则直走
+					omni_angle = 90;
+				else if (peRead12 && !peRead13)//一黑一白
+				{
+					omni_angle = 0;
+					omni_pwm = 200;
+				}
+				else if (!peRead12 && peRead13)//一黑一白，与上面相反
+				{
+					omni_angle = 180;
+					omni_pwm = 200;
+				}
+				else//如果全白，无法判断，继续直走
+					omni_angle = 90;
+			}
+			//如果小车不正
+			else if (!IsSensorEqual(4) || !IsSensorEqual(3))
+			{
+				if (peRead44)
+					Swirl(2);
+				if (peRead34)
+					Swirl(1);
+			}
+
+			//如果进入节点
+			if (!peRead32 && !peRead42 || !peRead33 && !peRead43)//原判断条件: !peRead32 && !peRead42
+			{
+				Now_step++;
+				crossing = 1;
+			}
+			/*else
+			{
+			omni_angle = 270;
+			omni_pwm = 250;
+			}*/
 			break;
 		}
 		case Y_decrease:
@@ -246,10 +336,18 @@ void PE_to_Position()
 		}
 		case X_decrease:
 		{
+			if (peRead31 + peRead32 + peRead33 + peRead34 >= 2 && peRead41 + peRead42 + peRead43 + peRead44 >= 2)//当大于两个是黑的时候代表出了crossing.
+			{
+				crossing = 0;
+			}
 			break;
 		}
 		case Y_increase:
 		{
+			if (peRead33 || peRead43)
+			{
+				crossing = 0;
+			}
 			break;
 		}
 		case Y_decrease:

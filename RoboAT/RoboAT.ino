@@ -93,7 +93,7 @@ void loop()
 
 		//直线循迹, 判断是否走偏.
 		PE_to_Position();
-		if (omni_angle != last_angle || omni_pwm == last_pwm)
+		if (omni_angle != last_angle || omni_pwm != last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
 		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令.
@@ -106,7 +106,7 @@ void loop()
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			delay(1000);
+			delay(500);
 			break;
 		}
 		//预先停止
@@ -135,32 +135,39 @@ void loop()
 			init_flag = 0;
 		}
 
-		//直线循迹
+		//直线循迹, 判断是否走偏.
 		PE_to_Position();
-		if (omni_angle != last_angle || omni_pwm == last_pwm)
+		if (omni_angle != last_angle || omni_pwm != last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动，与下面的预先停止二选一
+		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令.
+		//如果
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
-		}
-		//预先停止
-		/*if (Now_step == List[1][Now_Node] - 1)
-		{
-			omni_pwm = 125;
-		}*/
-
-		//进入节点之后的处理——读取下一个指令
-		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
-		{
-			++Now_Node;
+			Serial.println("stop!");
+			Now_Node++;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
+			delay(500);
 			break;
 		}
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 160;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		/*if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+		++Now_Node;
+		move_Mode = List[0][Now_Node];
+		Now_step = 0;
+		init_flag = 1;
+		break;
+		}*/
 		break;
 	}
 	case Y_increase:
@@ -172,33 +179,39 @@ void loop()
 			init_flag = 0;
 		}
 
-		//直线循迹
+		//直线循迹, 判断是否走偏.
 		PE_to_Position();
-		if (omni_angle != last_angle || omni_pwm == last_pwm)
+		if (omni_angle != last_angle || omni_pwm != last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动，与下面的预先停止二选一
+		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令.
+		//如果
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
-		}
-		/*
-		//预先停止
-		if (Now_step == List[1][Now_Node] - 1)
-		{
-			omni_pwm = 125;
-		}
-		*/
-		//进入节点之后的处理——读取下一个指令
-		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
-		{
-			++Now_Node;
+			Serial.println("stop!");
+			Now_Node++;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
+			delay(500);
 			break;
 		}
+		//预先停止
+		if (Now_step == List[1][Now_Node] - 1)
+		{
+			omni_pwm = 160;
+		}
+
+		//进入节点之后的处理——读取下一个指令
+		/*if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		{
+		++Now_Node;
+		move_Mode = List[0][Now_Node];
+		Now_step = 0;
+		init_flag = 1;
+		break;
+		}*/
 		break;
 	}
 	case Y_decrease:
@@ -211,12 +224,13 @@ void loop()
 			Serial.println("Y_decrease initialized!");
 		}
 
-		//直线循迹
+		//直线循迹, 判断是否走偏.
 		PE_to_Position();
-		if (omni_angle != last_angle || omni_pwm == last_pwm)
+		if (omni_angle != last_angle || omni_pwm != last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令
+		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令.
+		//如果
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
@@ -225,7 +239,7 @@ void loop()
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			delay(1000);
+			delay(500);
 			break;
 		}
 		//预先停止
