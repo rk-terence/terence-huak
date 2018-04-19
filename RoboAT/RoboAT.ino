@@ -69,15 +69,17 @@ void loop()
 	delay(1000);
 	DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
 	delay(1000);*/
-	PEread();	//读取光电传感器的值
+
+
+	PEread();//读取光电传感器的值
 
 	//监控器调试输出
-	flag = peRead31*1000+peRead32*100+peRead33*10+peRead34;
+	flag = peRead21*1000+peRead22*100+peRead23*10+peRead24;
 	Serial.println(flag);
-	Serial.println((int)crossing);
-	Serial.println((int)move_Mode);
-	Serial.println((int)Now_Node);
-	Serial.println((int)Now_step);
+	//Serial.println((int)crossing);
+	//Serial.println((int)move_Mode);
+	//Serial.println((int)Now_Node);
+	//Serial.println((int)Now_step);
 
 
 	switch (move_Mode)
@@ -96,33 +98,27 @@ void loop()
 		if (omni_angle != last_angle || omni_pwm == last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令
+		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			Serial.println("stop!");
-			Now_Node++;
-			move_Mode = List[0][Now_Node];
-			Now_step = 0;
-			init_flag = 1;
 			delay(1000);
-			break;
 		}
 		//预先停止
-		if (Now_step == List[1][Now_Node] - 1)
+		/*if (Now_step == List[1][Now_Node] - 1)
 		{
-			omni_pwm = 160;
-		}
+			omni_pwm = 125;
+		}*/
 
 		//进入节点之后的处理——读取下一个指令
-		/*if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		if (crossing && Now_step >= List[1][Now_Node])
 		{
+			Find_Back();
 			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			break;
-		}*/
+		}
 		break;
 	}
 	case X_decrease:
@@ -139,7 +135,7 @@ void loop()
 		if (omni_angle != last_angle || omni_pwm == last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动，与下面的预先停止二选一
+		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
@@ -148,17 +144,17 @@ void loop()
 		//预先停止
 		/*if (Now_step == List[1][Now_Node] - 1)
 		{
-			omni_pwm = 125;
+		omni_pwm = 125;
 		}*/
 
 		//进入节点之后的处理——读取下一个指令
-		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		if (crossing && Now_step >= List[1][Now_Node])
 		{
+			Find_Back();
 			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			break;
 		}
 		break;
 	}
@@ -176,27 +172,26 @@ void loop()
 		if (omni_angle != last_angle || omni_pwm == last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动，与下面的预先停止二选一
+		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
 			delay(1000);
 		}
-		/*
 		//预先停止
-		if (Now_step == List[1][Now_Node] - 1)
+		/*if (Now_step == List[1][Now_Node] - 1)
 		{
-			omni_pwm = 125;
-		}
-		*/
+		omni_pwm = 125;
+		}*/
+
 		//进入节点之后的处理——读取下一个指令
-		if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
+		if (crossing && Now_step >= List[1][Now_Node])
 		{
+			Find_Back();
 			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			break;
 		}
 		break;
 	}
@@ -204,44 +199,36 @@ void loop()
 	{
 		if (init_flag)
 		{
-			omni_angle = 270; omni_pwm = 200;//初始化
+			omni_angle = 270; omni_pwm = 250;//初始化
 			OmniDirMove(omni_angle, omni_pwm);
 			init_flag = 0;
-			Serial.println("Y_decrease initialized!");
 		}
-
 		//直线循迹
 		PE_to_Position();
 		if (omni_angle != last_angle || omni_pwm == last_pwm)
 			OmniDirMove(omni_angle, omni_pwm);
 
-		//制动急停，与下面的预先停止二选一，制动之后接收下一条移动指令
+		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			Serial.println("stop!");
-			Now_Node++;
+			delay(1000);
+		}
+		//预先停止
+		/*if (Now_step == List[1][Now_Node] - 1)
+		{
+		omni_pwm = 125;
+		}*/
+
+		//进入节点之后的处理——读取下一个指令
+		if (crossing && Now_step >= List[1][Now_Node])
+		{
+			Find_Back();
+			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
-			delay(1000);
-			break;
 		}
-		//预先停止
-		if (Now_step == List[1][Now_Node] - 1)
-		{
-			omni_pwm = 160;
-		}
-
-		//进入节点之后的处理——读取下一个指令
-		/*if (crossing  && change_crossing && Now_step >= List[1][Now_Node])
-		{
-		++Now_Node;
-		move_Mode = List[0][Now_Node];
-		Now_step = 0;
-		init_flag = 1;
-		break;
-		}*/
 		break;
 	}
 	default:

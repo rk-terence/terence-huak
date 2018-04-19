@@ -30,6 +30,7 @@ void PEread()
 函数功能：通过光电传感器读数分析机器人目前的运动状态，对小车运动状态进行微调：稍左、稍右、偏转
 入口参数：无
 返回  值：无
+版    本：0
 *********************************************************************************/
 void PE_to_Modify()
 {
@@ -60,6 +61,7 @@ void PE_to_Modify()
 函数功能：通过光电传感器读数分析出机器人目前状态，出现可能特殊状态时引导程序进入case 1, 包括过左、过右、十字
 入口参数：无
 返回  值：无
+版    本：1.0
 ************************************************************************************/
 void PE_to_Position()
 {
@@ -68,95 +70,127 @@ void PE_to_Position()
 		switch (move_Mode)
 		{
 		case X_increase:
+		{
 			//继续直走
-			if (peRead31 + peRead32 + peRead41 + peRead42 == peRead33 + peRead34 + peRead43 + peRead44)
+			if ((!peRead32 && !peRead33) || (!peRead42 && !peRead43))
 			{
 				omni_angle = 180;
+				omni_pwm = 212;
 			}
 
 			//需要左偏
-			if (peRead31 + peRead32 + peRead41 + peRead42 > peRead33 + peRead34 + peRead43 + peRead44)
+			if (!peRead34 && peRead32 && peRead31)
 			{
 				omni_angle = 200;
+				omni_pwm = 250;
 			}
 			//需要右偏
-			if (peRead31 + peRead32 + peRead41 + peRead42 < peRead33 + peRead34 + peRead43 + peRead44)
+			if (!peRead31 && peRead33 && peRead34)
 			{
 				omni_angle = 160;
+				omni_pwm = 250;
 			}
 
 			if (!peRead31 && !peRead32 && !peRead33 && !peRead34)
 			{
-				if (crossing == 0)
-				{
-					change_crossing = 1;
-					++Now_step;
-				}
-				else
-				{
-					change_crossing = 0;
-				}
+				++Now_step;
 				crossing = 1;
-				return;
 			}
-			/*else
-			{
-				omni_angle = 180;
-				omni_pwm = 250;
-			}*/
-
 			break;
-
-		case Y_decrease:
-			
+		}
+		case X_decrease:
+		{
 			//继续直走
-			if (peRead31 + peRead32 + peRead33 + peRead34 == peRead41 + peRead42 + peRead43 + peRead44)
+			if ((!peRead32 && !peRead33) || (!peRead42 && !peRead43))
 			{
-				omni_angle = 270;
-				
+				omni_angle = 0;
+				omni_pwm = 212;
 			}
 
 			//需要左偏
-			if (peRead31 + peRead32 + peRead33 + peRead34 < peRead41 + peRead42 + peRead43 + peRead44)
+			if (!peRead41 && peRead43 && peRead44)
 			{
-				omni_angle = 290;
-				
+				omni_angle = 20;
+				omni_pwm = 250;
 			}
 			//需要右偏
-			if (peRead31 + peRead32 + peRead33 + peRead34 > peRead41 + peRead42 + peRead43 + peRead44)
+			if (!peRead44 && peRead41 && peRead42)
 			{
-				omni_angle = 250;
-				
+				omni_angle = 340;
+				omni_pwm = 250;
+			}
+
+			if (!peRead41 && !peRead42 && !peRead43 && !peRead44)
+			{
+				++Now_step;
+				crossing = 1;
+			}
+			break;
+		}
+		case Y_increase:
+		{
+			//继续直走
+			if ((!peRead31 && !peRead32 && !peRead33 && !peRead34) || (!peRead41 && !peRead42 && !peRead43 && !peRead44))
+			{
+				omni_angle = 90;
+				omni_pwm = 212;
+			}
+
+			//需要左偏
+			if (!peRead11 || !peRead12)
+			{
+				omni_angle = 135;
+				omni_pwm = 250;
+			}
+			//需要右偏
+			if (!peRead13 || !peRead14)
+			{
+				omni_angle = 45;
+				omni_pwm = 250;
+			}
+
+			if (!peRead33 && !peRead43)
+			{
+				++Now_step;
+				crossing = 1;
+			}
+			break;
+		}
+		case Y_decrease:
+		{
+			//继续直走
+			if ((!peRead31 && !peRead32 && !peRead33 && !peRead34) || (!peRead41 && !peRead42 && !peRead43 && !peRead44))
+			{
+				omni_angle = 270;
+				omni_pwm = 212;
+			}
+
+			//需要左偏
+			if (!peRead23 || !peRead24)
+			{
+				omni_angle = 315;
+				omni_pwm = 250;
+			}
+			//需要右偏
+			if (!peRead21 || !peRead22)
+			{
+				omni_angle = 225;
+				omni_pwm = 250;
 			}
 
 			if (!peRead32 && !peRead42)
 			{
-				if (crossing == 0)
-				{
-					change_crossing = 1;
-					++Now_step;
-				}
-				else
-				{
-					change_crossing = 0;
-				}
+				++Now_step;
 				crossing = 1;
-
 			}
-			/*else
-			{
-				omni_angle = 270;
-				omni_pwm = 250;
-			}*/
 			break;
-
+		}
 		default:
 			omni_pwm = 0;
-
+			break;
 		}
-
 	}
-	else//crossing == 1
+	else
 	{
 		switch (move_Mode)
 		{
@@ -164,19 +198,29 @@ void PE_to_Position()
 			if ((peRead31 + peRead32 + peRead33 + peRead34) >= 2)
 			{
 				crossing = 0;
-				change_crossing = 0;
 			}
 			break;
-
+		case X_decrease:
+			if ((peRead41 + peRead42 + peRead43 + peRead44) >= 2)
+			{
+				crossing = 0;
+			}
+			break;
+		case Y_increase:
+			if (peRead33 || peRead43)
+			{
+				crossing = 0;
+			}
+			break;
 		case Y_decrease:
 			if (peRead32 || peRead42)
 			{
 				crossing = 0;
-				change_crossing = 0;
 			}
 			break;
 		default:
 			omni_pwm = 0;
+			break;
 		}
 	}
 }
@@ -272,4 +316,64 @@ void GetTruelv()
 
 	return;
 
+}
+
+/**************************************************************************
+函数功能：BACK and Find
+		走到节点之后往后退直到抵消超量。（方法：传感器再次全白）
+入口参数：无
+返回值  ：无
+*************************************************************************/
+void Find_Back()
+{
+	omni_pwm = 200;
+	switch (move_Mode)
+	{
+		case X_increase:
+		{
+			omni_angle = 0;
+			OmniDirMove(omni_angle, omni_pwm);
+			PEread();
+			while (peRead31 || peRead32 || peRead33 || peRead34) 
+			{
+				PEread();
+			}
+			break;
+		}
+		case Y_increase:
+		{
+			omni_angle = 270;
+			OmniDirMove(omni_angle, omni_pwm);
+			PEread();
+			while (peRead33 || peRead43) 
+			{ 
+				PEread();
+			}
+			break;
+		}
+		case X_decrease:
+		{
+			omni_angle = 180;
+			OmniDirMove(omni_angle, omni_pwm);
+			PEread();
+			while (peRead41 || peRead42 || peRead43 || peRead44) 
+			{
+				PEread();
+			}
+			break;
+		}
+		case Y_decrease:
+		{
+			omni_angle = 90;
+			OmniDirMove(omni_angle, omni_pwm);
+			PEread();
+			while (peRead32 || peRead42) 
+			{
+				PEread();
+			}
+			break;
+		}
+
+	}
+	return;
 }

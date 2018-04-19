@@ -69,7 +69,7 @@ int omni_angle, last_angle;
 float omni_pwm, last_pwm;
 
 //机器人关键帧相关
-char key_flag, crossing, runaway, change_crossing; //十字路口与跑偏状态
+char key_flag, crossing, runaway; //十字路口与跑偏状态
 
 char Get_Point;
 
