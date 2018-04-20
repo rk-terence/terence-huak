@@ -64,6 +64,8 @@ short queue21, queue22, queue23, queue24;
 short queue31, queue32, queue33, queue34;
 short queue41, queue42, queue43, queue44;
 
+short Y_node_count = 0;// Y方向协助计数。与List[x][y]有关。
+
 //Oniwheel 相关
 int omni_angle, last_angle;
 float omni_pwm, last_pwm;
@@ -77,7 +79,7 @@ const char List_Node1 = 10;
 char Now_step=0, Now_Node=0;
 //运动路径List, 第一行存储移动状态，第二行存储移动步数
 char List[][List_Node1] =
-{	{X_increase, Y_decrease, X_decrease, Y_increase, X_increase, Y_decrease, X_decrease, Y_increase, X_increase, X_decrease},
-	{7, 4, 7, 4, 7, 4, 7, 4, 7, 7}
+{	{Y_increase, -1},
+	{2}
 };
 //移动步数在双环嵌套PID中作为输入量

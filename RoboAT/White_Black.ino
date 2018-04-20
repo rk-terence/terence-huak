@@ -149,9 +149,9 @@ void PE_to_Position()
 				omni_pwm = 250;
 			}
 
-			if (!peRead33 && !peRead43)
+			if (!peRead11 && !peRead12 && !peRead13 && !peRead14)
 			{
-				++Now_step;
+				Now_step++;
 				crossing = 1;
 			}
 			break;
@@ -178,7 +178,7 @@ void PE_to_Position()
 				omni_pwm = 250;
 			}
 
-			if (!peRead32 && !peRead42)
+			if (!peRead21 && !peRead22 && !peRead23 && !peRead24)
 			{
 				++Now_step;
 				crossing = 1;
@@ -207,13 +207,13 @@ void PE_to_Position()
 			}
 			break;
 		case Y_increase:
-			if (peRead33 || peRead43)
+			if (peRead11 || peRead12 || peRead13 || peRead14)
 			{
 				crossing = 0;
 			}
 			break;
 		case Y_decrease:
-			if (peRead32 || peRead42)
+			if (peRead21 || peRead22 || peRead23 || peRead24)
 			{
 				crossing = 0;
 			}
@@ -342,7 +342,7 @@ void Find_Back()
 		}
 		case Y_increase:
 		{
-			omni_angle = 270;
+			omni_angle = 90;
 			OmniDirMove(omni_angle, omni_pwm);
 			PEread();
 			while (peRead33 || peRead43) 
@@ -364,7 +364,7 @@ void Find_Back()
 		}
 		case Y_decrease:
 		{
-			omni_angle = 90;
+			omni_angle = 270;
 			OmniDirMove(omni_angle, omni_pwm);
 			PEread();
 			while (peRead32 || peRead42) 

@@ -102,13 +102,13 @@ void loop()
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
+			delay(500);
 		}
-		//预先停止
-		/*if (Now_step == List[1][Now_Node] - 1)
-		{
-			omni_pwm = 125;
-		}*/
+		////预先停止
+		//if (Now_step == List[1][Now_Node] - 1)
+		//{
+		//	omni_pwm = 125;
+		//}
 
 		//进入节点之后的处理——读取下一个指令
 		if (crossing && Now_step >= List[1][Now_Node])
@@ -139,7 +139,7 @@ void loop()
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
+			delay(500);
 		}
 		//预先停止
 		/*if (Now_step == List[1][Now_Node] - 1)
@@ -176,7 +176,7 @@ void loop()
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
+			delay(500);
 		}
 		//预先停止
 		/*if (Now_step == List[1][Now_Node] - 1)
@@ -187,7 +187,7 @@ void loop()
 		//进入节点之后的处理——读取下一个指令
 		if (crossing && Now_step >= List[1][Now_Node])
 		{
-			Find_Back();
+			//Find_Back();
 			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
@@ -212,7 +212,7 @@ void loop()
 		if (Now_step == List[1][Now_Node])
 		{
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
-			delay(1000);
+			delay(500);
 		}
 		//预先停止
 		/*if (Now_step == List[1][Now_Node] - 1)
@@ -223,7 +223,7 @@ void loop()
 		//进入节点之后的处理——读取下一个指令
 		if (crossing && Now_step >= List[1][Now_Node])
 		{
-			Find_Back();
+			//Find_Back();
 			++Now_Node;
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
