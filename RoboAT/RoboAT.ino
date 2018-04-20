@@ -88,7 +88,7 @@ void loop()
 	{
 		if (init_flag)
 		{
-			omni_angle = 180; omni_pwm = 250;//初始化
+			omni_angle = 180; omni_pwm = 200;//初始化
 			OmniDirMove(omni_angle, omni_pwm);
 			init_flag = 0;
 		}
@@ -125,7 +125,7 @@ void loop()
 	{
 		if (init_flag)
 		{
-			omni_angle = 0; omni_pwm = 250;//初始化
+			omni_angle = 0; omni_pwm = 200;//初始化
 			OmniDirMove(omni_angle, omni_pwm);
 			init_flag = 0;
 		}
@@ -175,6 +175,8 @@ void loop()
 		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
+			OmniDirMove(90, 200);
+			delay(500);
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
 			delay(500);
 		}
@@ -192,6 +194,7 @@ void loop()
 			move_Mode = List[0][Now_Node];
 			Now_step = 0;
 			init_flag = 1;
+
 		}
 		break;
 	}
@@ -211,6 +214,8 @@ void loop()
 		//制动急停，与下面的预先停止二选一
 		if (Now_step == List[1][Now_Node])
 		{
+			OmniDirMove(270, 200);
+			delay(500);
 			DMotorControl(-1, 250, -1, 250, -1, 250, -1, 250);
 			delay(500);
 		}

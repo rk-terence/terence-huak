@@ -149,7 +149,7 @@ void PE_to_Position()
 				omni_pwm = 250;
 			}
 
-			if (!peRead11 && !peRead12 && !peRead13 && !peRead14)
+			if (!peRead12 && !peRead13)
 			{
 				Now_step++;
 				crossing = 1;
@@ -178,7 +178,7 @@ void PE_to_Position()
 				omni_pwm = 250;
 			}
 
-			if (!peRead21 && !peRead22 && !peRead23 && !peRead24)
+			if (!peRead22 && !peRead23)
 			{
 				++Now_step;
 				crossing = 1;
@@ -186,7 +186,7 @@ void PE_to_Position()
 			break;
 		}
 		default:
-			omni_pwm = 0;
+			OmniDirMove(0,0);
 			break;
 		}
 	}
@@ -207,13 +207,13 @@ void PE_to_Position()
 			}
 			break;
 		case Y_increase:
-			if (peRead11 || peRead12 || peRead13 || peRead14)
+			if ((peRead11 + peRead12 + peRead13 + peRead14) >= 2)
 			{
 				crossing = 0;
 			}
 			break;
 		case Y_decrease:
-			if (peRead21 || peRead22 || peRead23 || peRead24)
+			if ((peRead21 + peRead22 + peRead23 + peRead24) >= 2)
 			{
 				crossing = 0;
 			}
